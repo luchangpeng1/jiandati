@@ -7,7 +7,12 @@
 <body>
     <div class="container">
         <h1>随机问题生成器</h1>
-        <button id="generateBtn">生成一道随机题目</button>
+        <div class="button-group">
+            <button id="generateBtn">生成一道随机题目</button>
+            <select id="questionSelect">
+                <option value="-1">选择特定题目...</option>
+            </select>
+        </div>
         <div id="questionBox" class="question-box">
             <p>点击按钮生成随机题目。</p>
         </div>
@@ -98,6 +103,31 @@
             margin-top: 10px;
             font-weight: bold;
         }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;  /* 在空间不足时换行 */
+        }
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            width: 600px;  /* 增加宽度 */
+            max-width: 90%;
+            white-space: normal;  /* 允许文本换行 */
+            height: auto;  /* 高度自适应 */
+            line-height: 1.4;  /* 行高适中 */
+        }
+
+        select:hover {
+            border-color: #4CAF50;
+        }
     </style>
 
     <script>
@@ -161,17 +191,41 @@
             // 当前问题的索引
             let currentQuestionIndex = -1;
 
-            // 生成随机题目并显示
-            generateBtn.addEventListener('click', function() {
-                // 随机选择一个题目和答案
-                currentQuestionIndex = Math.floor(Math.random() * questions.length);
-                const randomQuestion = questions[currentQuestionIndex];
-                
-                // 显示题目
-                questionBox.innerHTML = `<p>${randomQuestion}</p>`;
+            // 获取选择框元素
+            const questionSelect = document.getElementById('questionSelect');
+
+            // 初始化选择框选项
+            questions.forEach((question, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                // 直接使用完整的问题文本
+                option.textContent = question;
+                questionSelect.appendChild(option);
+            });
+
+            // 监听选择框变化
+            questionSelect.addEventListener('change', function() {
+                const selectedIndex = parseInt(this.value);
+                if (selectedIndex === -1) return;
+
+                currentQuestionIndex = selectedIndex;
+                // 显示选中的题目
+                questionBox.innerHTML = `<p>${questions[selectedIndex]}</p>`;
                 answerBox.innerHTML = "<p>答案已隐藏。</p>";
                 resultBox.innerHTML = '';  // 清空之前的结果
                 userAnswerInput.value = '';  // 清空输入框
+            });
+
+            // 修改随机生成按钮的处理函数，添加选择框重置
+            generateBtn.addEventListener('click', function() {
+                currentQuestionIndex = Math.floor(Math.random() * questions.length);
+                const randomQuestion = questions[currentQuestionIndex];
+                
+                questionBox.innerHTML = `<p>${randomQuestion}</p>`;
+                answerBox.innerHTML = "<p>答案已隐藏。</p>";
+                resultBox.innerHTML = '';
+                userAnswerInput.value = '';
+                questionSelect.value = "-1"; // 重置选择框
             });
 
             // 检查答案是否正确
