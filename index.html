@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="container">
+        <h1>随机问题生成器</h1>
+        <button id="generateBtn">生成一道随机题目</button>
+        <div id="questionBox" class="question-box">
+            <p>点击按钮生成随机题目。</p>
+        </div>
+        <div id="answerBox" class="answer-box">
+            <p>答案会显示在这里。</p>
+        </div>
+        <div id="inputBox" class="input-box">
+            <textarea id="userAnswer" placeholder="请输入你的答案"></textarea>
+            <button id="checkAnswerBtn">检查答案</button>
+            <p id="result"></p>
+        </div>
+    </div>
+
+    <style>
+        /* 样式：简单布局和按钮样式 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 800px;  /* 增加宽度以适应更长的文本 */
+            max-width: 90%; /* 在移动设备上自适应 */
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .question-box {
+            margin-top: 20px;
+            font-size: 18px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            min-height: 100px;
+        }
+
+        .answer-box {
+            margin-top: 20px;
+            font-size: 16px;
+            padding: 15px;
+            background-color: #e9f7e9;
+            border: 1px solid #b3d7b3;
+            border-radius: 5px;
+            min-height: 100px;
+        }
+
+        .input-box {
+            margin-top: 20px;
+        }
+
+        #userAnswer {
+            width: 90%;
+            height: 150px;    /* 设置本框高度 */
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: vertical;    /* 允许垂直方向调整大小 */
+            margin-bottom: 10px;
+            font-family: Arial, sans-serif;
+        }
+
+        #result {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 题目数组
+            const questions = [
+                "1. 请简述电路交换、分组交换、报文交换各自的特点。",
+                "2. 请利用曼彻斯特编码、差分曼彻斯编码方式对二进制数字进行编码。",
+                "3. 请简述数据链路层协议如何解决“封装成帧”、“透明传输”和“差错控制”问题的。",
+                "4. 请简述CSMA/CD协议的工作原理。",
+                "5. 请问什么是碰撞域，什么是广播域？",
+                "6. 信道复用的原因和方式",
+                "7. ARP协议的工作过程。",
+                "8. 简述路由器分组转发算法的过程",
+                "9. Tracert指令的工作原理是什么？",
+                "10. RIP协议中距离向量算法的工作过程",
+                "11. BGP路由选择的方法。",
+                "12. IPV4向IPV6过渡的方法及其原理。",
+                "13. OSPF、MPLS的基本工作过程",
+                "14. 网络地址转换NAT、网络地址与端口号转换NAPT的工作原理",
+                "15. 什么是SDN，它具有哪些关键特征。",
+                "16. Karn算法的工作原理",
+                "17. 糊涂窗口综合征以及解决办法",
+                "18. 随机早期检测的工作过程",
+                "19. TCP连接建立的过程、连接释放的过程",
+                "20. 停止等待协议、连续ARQ协议的工作原理"
+            ];
+
+            // 答案数组
+            const answers = [
+                "电路交换：整个报文的比特流连续地从源点直达终点\n报文交换：整个报文传送到相邻节点，全部存储下来后查找转发表，转发到下一个节点。\n分组交换：单个分组传送到相邻节点，存储下来后查找转发表，转发到下一个节点",
+                "曼彻斯特编码：位周期中心的向上跳表示0，位周期中心的向下跳表示1。\n差分曼彻斯特编码：在每一位的中心始终都有跳变，位开始边界有跳变表示0，位开始边界无跳变表示1。",
+                "封装成帧：在帧的数据部分的前后分别添加上首部和尾部，构成一个完整的帧\n透明传输：在发送端的数据链路层，在数据出现控制字符\"SHO\"或\"EOT\"的前面插入一个转义字符\"ESC\"。\n差错检测：使用循环冗余检验的检错技术。",
+                "1. 载波监听：设备在发送数据前监听信道是否空闲。\n2. 多路访问：多个设备可同时访问信道\n3. 碰撞检测：发送数据时，设备持续监听信道，检测冲突。\n4. 截断二进制指数退避：发生冲突后，设备等待随机时间后重新发送。",
+                "碰撞域是指在同一个物理信道中，当两个或多个设备同时发送数据时，信号会发生碰撞的网络范围。\n广播域是指网络中广播数据包可以传播到的范围，一个广播域内的所有设备都能接收到同一个广播。",
+                "原因：主要包括提高传输媒介的利用率、降低成本、提高通信效率、适应多种应用场景以及增强抗干扰能力。\n方式：频分复用，时分复用，统计时分复用，波分复用，码分复用",
+                "ARP协议是在主机的ARP高速缓存中存放一个从IP地址到MAC地址的映射表，并且这个映射表还经常动态更新",
+                "1. 接收数据包并解封装。\n2. 查找路由表，使用最长前缀匹配确定最佳路由。\n3. 确定下一跳地址或出口接口。\n4. 更新数据包的TTL和校验和。\n5. 将数据包转发到下一跳或目标设备。",
+                "Tracert通过发送TTL递增的ICMP请求，记录每跳路由器的ICMP超时报文或目标主机的回显响应，显示源设备到目标设备的网络路径及延迟。",
+                "1.从一路由器到直接相连网络的距离定义为1。\n2.RIP协议的距离也称为跳数，并且每经过一个路由器，跳数就加1。",
+                "1.本地偏好LOCAL-PREF值最高的路由要首先选择\n2.选择具有AS跳数最少的路由\n3.使用热土豆路由选择算法\n4.选择路由器BGP标识符的数值最小的路由",
+                "双协议栈，双协栈是指在完全过渡到IPV6之前，使一部分主机同时装有IPV4和IPV6这两种协议栈。\n隧道技术，隧道技术是在IPV6数据报要进入IPV4网络时，把IPV6数据报封装成为IPV4数据报。",
+                "OSPF：路由器通过洪泛法，定期或在链路状态变化时，向自治系统内所有路由器广播相邻链路状态信息。\nMPLS：MPLS通过在数据包上添加标签来加速网络传输。入口节点给数据包打标签，LSR根据标签转发并更换标签，出口节点移除标签后常规转发。",
+                "NAT的工作原理是将内网的私有IP地址转换为公网IP地址，使得内网设备能够与公网设备通信。\nNAPT在此基础上更进一步，不仅转换IP地址，还转换端口号，使得多个内网设备可以通过同一个公网IP地址的不同端口进行通信",
+                "SDN是一种网络架构，它通过分离网络的控制层面和数据层面，让控制层面利用软件来控制数据层面的许多设备。\n\n关键特征：\n1.基于流的转发\n2.数据层面与控制层面分离\n3.位于数据层面交换机之外的网络控制功能\n4.可编程的网络",
+                "Karn算法：在计算加权平均RTTs时，只要报文段重传了，就不采用其往返时间样本。这样得出的加权平均RTTs和RTO就比较准确。",
+                "糊涂窗口综合征是指在TCP通信中，发送方频繁发送过小的数据包或接收方频繁更新窗口导致低效数据传输的现象\n\n解决方法：接收方可以等待一段时间，直到接收缓存有足够空间容纳一个最长报文段，或缓存空闲达到一半，再发送窗口更新。",
+                "随机早期检测通过监控队列平均长度，提前丢弃部分分组：\n队列长度小于最小门限：不丢包。\n队列长度大于最大门限：直接丢包。\n队列长度在两者之间：按概率丢包。",
+                "TCP连接建立\n客户端发送SYN请求建立连接。\n服务端回复SYN+ACK确认请求。\n客户端发送ACK确认，连接建立。\n\nTCP连接释放\n客户端发送FIN请求关闭连接。\n服务端回复ACK确认关闭请求。\n服务端发送FIN表示准备关闭。\n客户端回复ACK确认后释放连接。",
+                "停止等待就是每发送完一个分组就停止发送，等待对方的确认。在收到确认后再发送下一个分组。\n\n发送方连续发送多个分组，接收方按序确认；若检测到丢包或错误，通知发送方重传丢失分组。"
+            ];
+
+            // 获取页面元素
+            const generateBtn = document.getElementById('generateBtn');
+            const questionBox = document.getElementById('questionBox');
+            const answerBox = document.getElementById('answerBox');
+            const userAnswerInput = document.getElementById('userAnswer');
+            const checkAnswerBtn = document.getElementById('checkAnswerBtn');
+            const resultBox = document.getElementById('result');
+
+            // 当前问题的索引
+            let currentQuestionIndex = -1;
+
+            // 生成随机题目并显示
+            generateBtn.addEventListener('click', function() {
+                // 随机选择一个题目和答案
+                currentQuestionIndex = Math.floor(Math.random() * questions.length);
+                const randomQuestion = questions[currentQuestionIndex];
+                
+                // 显示题目
+                questionBox.innerHTML = `<p>${randomQuestion}</p>`;
+                answerBox.innerHTML = "<p>答案已隐藏。</p>";
+                resultBox.innerHTML = '';  // 清空之前的结果
+                userAnswerInput.value = '';  // 清空输入框
+            });
+
+            // 检查答案是否正确
+            checkAnswerBtn.addEventListener('click', function() {
+                if (currentQuestionIndex === -1) {
+                    resultBox.innerHTML = '<p style="color: orange;">请先生成一道题目</p>';
+                    return;
+                }
+
+                const userAnswer = userAnswerInput.value.trim().toLowerCase()
+                    .replace(/\s+/g, ' ')  // 将多个空白字符替换为单个空格
+                    .replace(/[.,，。]/g, ''); // 移除标点符号
+                
+                const correctAnswer = answers[currentQuestionIndex].toLowerCase()
+                    .replace(/\s+/g, ' ')
+                    .replace(/[.,，。]/g, '');
+                
+                if (userAnswer === correctAnswer) {
+                    resultBox.innerHTML = '<p style="color: green;">正确！</p>';
+                    // 显示标准答案以供参考
+                    answerBox.innerHTML = `<p>标准答案：<br>${answers[currentQuestionIndex]}</p>`;
+                } else {
+                    resultBox.innerHTML = '<p style="color: red;">答案不完全正确，请参考标准答案</p>';
+                    // 显示标准答案供对比
+                    answerBox.innerHTML = `<p>标准答案：<br>${answers[currentQuestionIndex]}</p>`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
